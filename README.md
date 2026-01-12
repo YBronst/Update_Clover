@@ -159,4 +159,5 @@ Currently supports:
 - Portuguese
 - English
 
-## [Thanks to hnanoto!](https://github.com/hnanoto)
+## Credits
+- [Thanks to hnanoto!](https://github.com/hnanoto)
