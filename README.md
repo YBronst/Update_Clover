@@ -158,3 +158,5 @@ The script now supports multilingual messages via JSON translation files.
 Currently supports:
 - Portuguese
 - English
+
+## [Thanks to hnanoto!](https://github.com/hnanoto)
