@@ -1,20 +1,21 @@
 #!/bin/bash
 
-# Caminho até o diretório do script
+# Path to the script directory
 cd "$(dirname "$0")"
 
-# Verifica se o Python 3 está instalado
+# Checks if Python 3 is installed
 if ! command -v python3 &> /dev/null; then
-    echo "Python 3 não encontrado. Por favor, instale-o antes de continuar."
-    exit 1
+
+echo "Python 3 not found. Please install it before continuing."
+exit 1
 fi
 
-# Instala as dependências automaticamente (se necessário)
-echo "Verificando dependências..."
+# Installs dependencies automatically (if necessary)
+echo "Checking dependencies..."
 python3 -m pip install --quiet -r requirements.txt
 
-# Executa o script principal
-echo "Iniciando o Clover Updater..."
+# Executes the main script
+echo "Starting Clover Updater..."
 python3 main.py
 
 import os
@@ -26,38 +27,57 @@ from logger import logger, GREEN, load_translations
 from menu import exibir_menu
 
 def main():
-    """Função principal do script."""
-    try:
-        # Carrega as traduções do idioma do sistema ou usa inglês como padrão
-        load_translations("")
 
-        check_environment()
-        check_dependencies()
+""Main function of the script."""
 
-        # Baixa o Clover apenas uma vez e obtém o caminho do arquivo
-        clover_zip_path = os.path.join(SCRIPT_DIR, "Clover.zip")
-        download_clover(clover_zip_path)
+try:
 
-        efi_dir = list_all_efi()  # Obtenha o valor de EFI_DIR retornado por list_all_efi
+# Loads system language translations or uses English as default
+load_translations("")
 
-        # Se EFI_DIR estiver definido, prossiga com o backup e o menu
-        if efi_dir:
-            backup_efi()
-            exibir_menu(efi_dir, clover_zip_path)
-            logger("update_successful", GREEN)  # Mensagem de sucesso
-        else:
-            logger("error_efi_dir_not_defined", RED)  # Mensagem de erro
+check_environment()
 
-    except SystemExit as se:
-        if se.code != 0:
-            logger("script_error", RED)
-    except CloverUpdateError as e:
-        logger("error", RED, error=e)  # Mensagem de erro formatada
-    except Exception as e:
-        logger("unexpected_error", RED, error=e)  # Mensagem de erro formatada
-    finally:
-        cleanup()
-        logger("logs_saved", None, logfile=LOGFILE)  # Mensagem de log
+check_dependencies()
+
+# Downloads the Clover only once and gets the file path
+
+clover_zip_path = os.path.join(SCRIPT_DIR, "Clover.zip")
+
+download_clover(clover_zip_path)
+
+efi_dir = list_all_efi() # Get the value of EFI_DIR returned by list_all_efi
+
+# If EFI_DIR is set, proceed with backup and menu
+
+if efi_dir:
+backup_efi()
+display_menu(efi_dir, clover_zip_path)
+
+logger("update_successful", GREEN) # Success message
+
+else:
+
+logger("error_efi_dir_not_defined", RED) # Error message
+
+except SystemExit as se:
+
+if se.code != 0:
+
+logger("script_error", RED)
+
+except CloverUpdateError as e:
+
+logger("error", RED, error=e) # Formatted error message
+
+except Exception as e:
+
+logger("unexpected_error", RED, error=e) # Formatted error message
+
+finally:
+
+cleanup()
+
+logger("logs_saved", None, logfile=LOGFILE) # Log message
 
 if __name__ == "__main__":
-    main()
+main()

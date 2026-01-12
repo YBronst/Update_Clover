@@ -10,39 +10,39 @@ from logger import logger, GREEN, load_translations
 from menu import exibir_menu
 
 def main():
-    """Função principal do script."""
+    """Main function of the script."""
     try:
-        # Carrega as traduções do idioma do sistema ou usa inglês como padrão
+        # Loads translations based on system language or uses English as default
         load_translations("")
 
         check_environment()
         check_dependencies()
 
-        # Baixa o Clover apenas uma vez e obtém o caminho do arquivo
+        # Downloads Clover only once and obtains the ZIP file path
         clover_zip_path = os.path.join(SCRIPT_DIR, "Clover.zip")
         download_clover(clover_zip_path)
         ocbinarydata_dir = download_ocbinarydata()
 
-        efi_dir = list_all_efi()  # Obtenha o valor de EFI_DIR retornado por list_all_efi
+        efi_dir = list_all_efi()  # Gets the EFI_DIR value returned by list_all_efi
 
-        # Se EFI_DIR estiver definido, prossiga com o backup e o menu
+        # If EFI_DIR is defined, proceed with backup and menu
         if efi_dir:
             backup_efi()
             exibir_menu(efi_dir, clover_zip_path)
-            logger("update_successful", GREEN)  # Mensagem de sucesso
+            logger("update_successful", GREEN)  # Success message
         else:
-            logger("error_efi_dir_not_defined", RED)  # Mensagem de erro
+            logger("error_efi_dir_not_defined", RED)  # Error message
 
     except SystemExit as se:
         if se.code != 0:
             logger("script_error", RED)
     except CloverUpdateError as e:
-        logger("error", RED, error=e)  # Mensagem de erro formatada
+        logger("error", RED, error=e)  # Formatted error message
     except Exception as e:
-        logger("unexpected_error", RED, error=e)  # Mensagem de erro formatada
+        logger("unexpected_error", RED, error=e)  # Formatted error message
     finally:
         cleanup()
-        logger("logs_saved", None, logfile=LOGFILE)  # Mensagem de log
+        logger("logs_saved", None, logfile=LOGFILE)  # Log message
 
 if __name__ == "__main__":
     main()

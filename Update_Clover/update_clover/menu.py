@@ -20,7 +20,7 @@ def exibir_menu(efi_dir, clover_zip_path):
 
         escolha = input("\n" + logger("choose_option", YELLOW, return_message=True) + " ")
 
-        # Verifica se a partição EFI está montada antes de prosseguir
+        # Verify that the EFI partition is mounted before proceeding.
         if not is_efi_read_only(efi_dir):
             logger("efi_ready", GREEN, efi_dir=efi_dir)
         else:
@@ -40,7 +40,7 @@ def exibir_menu(efi_dir, clover_zip_path):
             logger("invalid_option", RED)
 
 def atualizar_bootx64(efi_dir, clover_zip_path):
-    """Atualiza o arquivo BOOTX64.efi na partição EFI."""
+    """Update the BOOTX64.efi file on the EFI partition."""
     logger("start_update_bootx64", YELLOW)
     try:
         update_bootx64(efi_dir, clover_zip_path)
@@ -49,7 +49,7 @@ def atualizar_bootx64(efi_dir, clover_zip_path):
         logger("error_updating_bootx64", RED, error=e)
 
 def atualizar_cloverx64(efi_dir, clover_zip_path):
-    """Atualiza o arquivo CLOVERX64.efi na partição EFI."""
+    """Update the CLOVERX64.efi file on the EFI partition."""
     logger("start_update_cloverx64", YELLOW)
     try:
         update_cloverx64(efi_dir, clover_zip_path)
@@ -58,7 +58,7 @@ def atualizar_cloverx64(efi_dir, clover_zip_path):
         logger("error_updating_cloverx64", RED, error=e)
 
 def atualizar_drivers(efi_dir, clover_zip_path):
-    """Atualiza os drivers UEFI na partição EFI."""
+    """Update the UEFI drivers on the EFI partition."""
     logger("start_update_drivers", YELLOW)
     try:
         update_clover_drivers(efi_dir, clover_zip_path)
@@ -67,7 +67,7 @@ def atualizar_drivers(efi_dir, clover_zip_path):
         logger("error_updating_drivers", RED, error=e)
 
 def atualizar_tudo(efi_dir, clover_zip_path):
-    """Atualiza todos os componentes do Clover (BOOTX64.efi, CLOVERX64.efi e drivers)."""
+    """Update all Clover components (BOOTX64.efi, CLOVER X64.uefi, and drivers)."""
     logger("start_full_update", YELLOW)
     try:
         atualizar_boot_clover(efi_dir, clover_zip_path)
@@ -77,7 +77,7 @@ def atualizar_tudo(efi_dir, clover_zip_path):
         logger("error_updating_clover", RED, error=e)
 
 def atualizar_boot_clover(efi_dir, clover_zip_path):
-    """Atualiza os arquivos BOOTX64.efi e CLOVERX64.efi na partição EFI."""
+    """Updates the BOOTX64.efi and CLOVERX64.efi files on the EFI partition."""
     logger("start_update_boot_clover", YELLOW)
     try:
         update_bootx64(efi_dir, clover_zip_path)

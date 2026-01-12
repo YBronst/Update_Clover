@@ -6,16 +6,16 @@ from config import BACKUP_BASE_DIR, YELLOW, RED, GREEN
 from utils import run_command, CloverUpdateError
 from logger import logger
 
-# Declaração da variável EFI_DIR (será definida em list_all_efi)
+# Declaration of EFI_DIR variable (will be defined in list_all_efi)
 EFI_DIR = ""
 
 def is_efi_read_only(mount_point):
-    """Verifica se a partição EFI está montada como somente leitura."""
+    """Checks whether the EFI partition is mounted as read-only."""
     logger("checking_efi_read_only", YELLOW, mount_point=mount_point)
     ret_code, stdout, stderr = run_command(["mount"])
     if ret_code != 0:
         logger("error_getting_efi_info", RED, partition=mount_point)
-        return True  # Assume que está como somente leitura em caso de erro
+        return True  # Assume it's read-only in case of error
 
     for line in stdout.splitlines():
         if mount_point in line and "read-only" in line:
@@ -25,7 +25,7 @@ def is_efi_read_only(mount_point):
     return False
 
 def detect_bootloader(efi_dir):
-    """Detecta qual gerenciador de boot está presente na partição EFI (Clover ou OpenCore)."""
+    """Detects which bootloader is present in the EFI partition (Clover or OpenCore)."""
     logger("detecting_bootloader", YELLOW, efi_dir=efi_dir)
 
     clover_path = os.path.join(efi_dir, "EFI", "CLOVER")
@@ -46,7 +46,7 @@ def detect_bootloader(efi_dir):
         return None
 
 def list_all_efi():
-    """Lista todas as partições EFI e permite ao usuário escolher uma."""
+    """Lists all EFI partitions and allows the user to choose one."""
     global EFI_DIR
     logger("locating_efi_partitions", YELLOW)
     ret_code, stdout, stderr = run_command(["diskutil", "list"])
@@ -78,7 +78,7 @@ def list_all_efi():
             selected_efi = efi_partitions[choice - 1]
             logger("efi_partition_selected", GREEN, partition=selected_efi)
 
-            # Loop para aguardar a montagem da partição, se necessário
+            # Loop to wait for the partition to mount, if necessary
             while True:
                 ret_code, stdout, stderr = run_command(["diskutil", "info", selected_efi])
                 if ret_code != 0:
@@ -89,27 +89,27 @@ def list_all_efi():
                     EFI_DIR = mount_point_line[0].split(':', 1)[1].strip()
                     if EFI_DIR:
                         logger("mount_point", GREEN, mount_point=EFI_DIR)
-                        break  # Sai do loop, pois a partição está montada
+                        break  # Exit loop because partition is mounted
                     else:
                         logger("mount_wait", YELLOW, partition=selected_efi)
                         logger("press_ctrl_c_to_exit", YELLOW)
-                        time.sleep(5)  # Aguarda 5 segundos antes de verificar novamente
+                        time.sleep(5)  # Wait 5 seconds before checking again
                 else:
                     logger("mount_error", YELLOW, partition=selected_efi)
-                    time.sleep(5)  # Aguarda 5 segundos antes de verificar novamente
+                    time.sleep(5)  # Wait 5 seconds before checking again
 
-            # Neste ponto, a partição EFI está montada
+            # At this point, EFI partition is mounted
             logger("efi_dir_after_mount", YELLOW, efi_dir=EFI_DIR)
 
-            # Verifica se a EFI está montada como somente leitura e tenta remontá-la
+            # Check whether EFI is mounted read-only and try to remount
             if is_efi_read_only(EFI_DIR):
                 raise CloverUpdateError("read_only_error", mount_point=EFI_DIR)
 
-            # Verifica qual é o gerenciador de boot
+            # Detect which bootloader is present
             bootloader = detect_bootloader(EFI_DIR)
             if bootloader == "Clover":
                 logger("clover_detected", GREEN)
-                return EFI_DIR  # Retorna o diretório EFI
+                return EFI_DIR  # Return EFI directory
             elif bootloader == "OpenCore":
                 logger("not_clover_abort", RED)
                 sys.exit(1)
@@ -123,12 +123,12 @@ def list_all_efi():
             logger("invalid_choice", RED)
 
 def backup_efi():
-    """Cria um backup da partição EFI selecionada."""
+    """Creates a backup of the selected EFI partition."""
     backup_base_dir = os.path.join(BACKUP_BASE_DIR, "EFI_BACKUPS")
     timestamp = time.strftime('%Y%m%d%H%M%S')
     backup_dir = os.path.join(backup_base_dir, f"EFI-Backup-{timestamp}")
 
-    # Verifica se o diretório já existe e adiciona um sufixo numérico, se necessário
+    # Checks if the directory already exists and adds a numeric suffix if needed
     count = 1
     while os.path.exists(backup_dir):
         backup_dir = os.path.join(backup_base_dir, f"EFI-Backup-{timestamp}-{count}")
@@ -139,7 +139,7 @@ def backup_efi():
     os.makedirs(backup_dir, exist_ok=True)
 
     try:
-        # Copia a estrutura de diretórios e arquivos.
+        # Copies the directory and file structure.
         for item in os.listdir(EFI_DIR):
             s = os.path.join(EFI_DIR, item)
             d = os.path.join(backup_dir, item)
@@ -148,12 +148,12 @@ def backup_efi():
             else:
                 shutil.copy2(s, d)
 
-        # Corrige as permissões do diretório de backup
+        # Fixes permissions of the backup directory
         for root, dirs, files in os.walk(backup_dir):
             for d in dirs:
-                os.chmod(os.path.join(root, d), 0o755)  # Permissão de leitura e execução para todos
+                os.chmod(os.path.join(root, d), 0o755)  # Read & execute for everyone
             for f in files:
-                os.chmod(os.path.join(root, f), 0o644)  # Permissão de leitura para todos
+                os.chmod(os.path.join(root, f), 0o644)  # Read-only for everyone
 
         logger("backup_created", GREEN, backup_dir=backup_dir)
 
@@ -171,7 +171,8 @@ def update_clover_drivers(clover_extracted_dir, ocbinarydata_dir, efi_mount_poin
     if not os.path.isdir(source_dir):
         logger('driver_not_found', RED)
         return
-    # Remove TODOS os arquivos antigos da pasta drivers/UEFI
+
+    # Remove ALL old files from drivers/UEFI
     if os.path.isdir(dest_dir):
         for f in os.listdir(dest_dir):
             file_path = os.path.join(dest_dir, f)
@@ -182,13 +183,15 @@ def update_clover_drivers(clover_extracted_dir, ocbinarydata_dir, efi_mount_poin
                     pass
     else:
         os.makedirs(dest_dir, exist_ok=True)
-    # Copia todos os .efi novos
+
+    # Copy all new .efi files
     for f in glob.glob(os.path.join(source_dir, '*.efi')):
         try:
             shutil.copy2(f, dest_dir)
-            logger(f'Driver {os.path.basename(f)} atualizado', GREEN)
+            logger(f'Driver {os.path.basename(f)} updated', GREEN)
         except Exception:
             logger('driver_not_found', RED)
-    # Copia HFSPlus.efi
+
+    # Copy HFSPlus.efi
     copy_hfsplus_driver(ocbinarydata_dir, dest_dir)
     logger('uefi_drivers_updated', GREEN)

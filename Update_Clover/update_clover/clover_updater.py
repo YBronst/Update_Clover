@@ -9,7 +9,7 @@ from utils import run_command, CloverUpdateError, validate_clover_zip
 from logger import logger
 
 def download_clover(clover_zip_path):
-    """Baixa a última versão do Clover do repositório."""
+    """Download the latest version of Clover from the repository."""
     logger("downloading_clover", YELLOW)
 
     # Verifica se uma URL de download direto foi fornecida
@@ -53,7 +53,7 @@ def download_clover(clover_zip_path):
     logger("clover_downloaded", GREEN)
 
 def update_bootx64(efi_dir, clover_zip_path):
-    """Atualiza o arquivo BOOTX64.efi na partição EFI."""
+    """Update the BOOTX64.efi file on the EFI partition."""
     clover_extracted_dir = os.path.join(SCRIPT_DIR, "Clover_extracted")
 
     # Descompactar o Clover
@@ -78,11 +78,11 @@ def update_bootx64(efi_dir, clover_zip_path):
         raise CloverUpdateError(f"error_updating_bootx64 {e}")
 
 def update_cloverx64(efi_dir, clover_zip_path):
-    """Atualiza o arquivo CLOVERX64.efi na partição EFI."""
+    """Update the CLOVERX64.efi file on the EFI partition."""
     clover_extracted_dir = os.path.join(SCRIPT_DIR, "Clover_extracted")
     clover_efi_dir = os.path.join(clover_extracted_dir, "CloverV2", "EFI")
 
-    # Cria os diretórios de destino se eles não existirem
+    # Creates the destination directories if they do not exist
     os.makedirs(os.path.join(efi_dir, "EFI/CLOVER"), exist_ok=True)
 
     logger("updating_cloverx64", YELLOW)
@@ -93,7 +93,7 @@ def update_cloverx64(efi_dir, clover_zip_path):
         raise CloverUpdateError(f"error_updating_cloverx64 {e}")
 
 def update_clover_drivers(efi_dir, clover_zip_path):
-    """Atualiza os drivers UEFI do Clover na partição EFI."""
+    """Update the Clover UEFI drivers on the EFI partition."""
     logger("start_update_drivers", YELLOW)
     clover_extracted_dir = os.path.join(SCRIPT_DIR, "Clover_extracted")
     clover_drivers_dir = os.path.join(clover_extracted_dir, "CloverV2", "EFI", "CLOVER", "Drivers")
@@ -104,28 +104,28 @@ def update_clover_drivers(efi_dir, clover_zip_path):
     if not os.path.isdir(efi_uefi_dir):
         raise CloverUpdateError(f"error_uefi_folder_not_found {efi_drivers_dir}.")
 
-    # Subpastas dentro de Off/UEFI onde os drivers estão localizados
+    # Subfolders within Off/UEFI where the drivers are located
     clover_driver_subfolders = ["FileSystem", "FileVault2", "HID", "MemoryFix", "Other"]
 
     logger("listing_drivers", YELLOW, efi_uefi_dir=efi_uefi_dir)
 
-    # Lista os drivers existentes na pasta UEFI da EFI principal
+    # Lists the drivers located in the UEFI folder of the main EFI directory
     existing_drivers = glob.glob(os.path.join(efi_uefi_dir, "*.efi"))
 
     for driver_path in existing_drivers:
         driver_basename = os.path.basename(driver_path)
-        driver_updated = False  # Flag para verificar se o driver foi atualizado
+        driver_updated = False  # Flag to check if the driver has been updated
 
-        # Verifica se o driver existe em alguma das subpastas do Clover baixado
+        # Check if the driver exists in any of the subfolders of the downloaded Clover
         for subfolder in clover_driver_subfolders:
             clover_driver_path = os.path.join(clover_uefi_off_dir, subfolder, driver_basename)
             if os.path.isfile(clover_driver_path):
                 logger("updating_driver", YELLOW, driver_basename=driver_basename)
                 try:
-                    shutil.copy2(clover_driver_path, driver_path)  # Copia, preservando metadados
+                    shutil.copy2(clover_driver_path, driver_path)  # Copy, preserving metadata
                     logger("driver_updated", GREEN, driver_basename=driver_basename)
                     driver_updated = True
-                    break  # Sai do loop interno se o driver for atualizado
+                    break  # Exit the internal loop if the driver is updated
                 except Exception as e:
                     raise CloverUpdateError(f"error_updating_driver {driver_basename} {e}")
 
@@ -135,12 +135,12 @@ def update_clover_drivers(efi_dir, clover_zip_path):
     logger("uefi_drivers_updated", GREEN)
 
 def unzip_clover(clover_zip_path):
-    """Extrai o Clover.zip e retorna o caminho da pasta EFI extraída."""
+    """Extract the Clover.zip file and return the path to the extracted EFI folder."""
     import zipfile
     import tempfile
 
     if not os.path.isfile(clover_zip_path):
-        raise CloverUpdateError("Clover.zip não encontrado.")
+        raise CloverUpdateError("Clover.zip not found.")
 
     extract_dir = tempfile.mkdtemp(prefix="clover_extracted_")
 
@@ -149,6 +149,6 @@ def unzip_clover(clover_zip_path):
 
     efi_path = os.path.join(extract_dir, "EFI")
     if not os.path.isdir(efi_path):
-        raise CloverUpdateError("Estrutura EFI não encontrada após extração do Clover.zip.")
+        raise CloverUpdateError("EFI structure not found after extracting Clover.zip.")
 
     return extract_dir

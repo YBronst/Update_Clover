@@ -4,53 +4,53 @@ import os
 from config import LOGFILE, RED, GREEN, YELLOW, NC, SCRIPT_DIR
 import locale
 
-translations = {}  # Dicionário global para armazenar as traduções
+translations = {}  # Global dictionary to store translations
 
 def get_system_language():
-    """Obtém o idioma preferido do sistema operacional."""
+    """Gets the preferred language of the operating system."""
     try:
-        # Obtém o idioma e a codificação do sistema
+        # Gets the system locale and encoding
         system_locale = locale.getdefaultlocale()
         if system_locale[0]:
-            # Retorna o código do idioma (por exemplo, 'pt_BR', 'en_US')
-            return system_locale[0].split('_')[0]  # Retorna apenas o código principal (pt, en, etc.)
+            # Returns the language code (e.g., 'ru_RU', 'en_US')
+            return system_locale[0].split('_')[0]  # Returns only the main code (ru, en, pt, etc.)
         else:
-            # Retorna None se não conseguir obter o idioma
+            # Returns None if unable to detect the language
             return None
     except Exception as e:
         logger("error_getting_system_language", RED, error=e)
         return None
 
 def load_translations(language=None):
-    """Carrega as traduções de um arquivo JSON."""
+    """Loads translations from a JSON file."""
     global translations
     if not language:
-        language = get_system_language() or "en"  # Usa "en" como padrão se não conseguir detectar o idioma
+        language = get_system_language() or "en"  # Uses English as default if detection fails
 
     translations_path = os.path.join(SCRIPT_DIR, "translations")
-    print(f"Tentando carregar traduções de: {translations_path}/{language}.json")
+    print(f"Trying to load translations from: {translations_path}/{language}.json")
     try:
         with open(f"{translations_path}/{language}.json", "r", encoding="utf-8") as f:
             translations = json.load(f)
-        logger(f"Traduções carregadas com sucesso para o idioma: {language}", GREEN)
+        logger(f"Translations successfully loaded for language: {language}", GREEN)
     except FileNotFoundError:
         logger("translation_file_not_found", RED, language=language)
-        # Carrega o idioma padrão (inglês) se o arquivo de tradução não for encontrado
+        # Loads the default language (English) if translation file is missing
         if language != "en":
             load_translations("en")
     except json.JSONDecodeError:
         logger("json_decode_error", RED, language=language)
 
 def logger(message_key, color=None, return_message=False, **kwargs):
-    """Registra mensagens de log no console e em um arquivo."""
+    """Logs messages to console and to a file."""
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     color_prefix = color if color else ""
     color_suffix = NC if color else ""
 
-    # Obtém a mensagem traduzida ou usa a chave como mensagem padrão
+    # Gets the translated message or uses the key as fallback
     message = translations.get(message_key, message_key)
 
-    # Formata a mensagem com argumentos nomeados, se houver
+    # Formats the message with named parameters, if any
     try:
         message = message.format(**kwargs)
     except KeyError as e:

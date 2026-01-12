@@ -8,24 +8,24 @@ from logger import logger
 from config import GREEN, RED
 
 class CloverUpdateError(Exception):
-    """Exceção personalizada para erros relacionados à atualização do Clover."""
+    """Custom exception for errors related to Clover update."""
     pass
 
 def run_command(command):
-    """Executa um comando no terminal e retorna o código de saída, stdout e stderr."""
+    """Executes a terminal command and returns exit code, stdout, and stderr."""
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     stdout, stderr = process.communicate()
     return process.returncode, stdout, stderr
 
 def check_environment():
-    """Verifica se o ambiente é macOS."""
+    """Checks whether the environment is macOS."""
     logger("verifying_environment", YELLOW)
     if sys.platform != "darwin":
         raise CloverUpdateError("error_environment")
     logger("environment_verified", GREEN)
 
 def check_dependencies():
-    """Verifica se as dependências necessárias estão instaladas."""
+    """Checks whether the required dependencies are installed."""
     logger("verifying_dependencies", YELLOW)
     dependencies = ["curl", "unzip", "/usr/libexec/PlistBuddy", "installer"]
     for dep in dependencies:
@@ -35,7 +35,7 @@ def check_dependencies():
     logger("all_dependencies_available", GREEN)
 
 def validate_clover_zip(file_path):
-    """Verifica se o arquivo Clover.zip é válido."""
+    """Checks whether the Clover.zip file is valid."""
     if not os.path.exists(file_path):
         raise CloverUpdateError(f"error_clover_zip_small", file_path=file_path)
 
@@ -50,7 +50,7 @@ def validate_clover_zip(file_path):
         logger("verifying_file_integrity", YELLOW)
         sha256_hash = hashlib.sha256()
         with open(file_path,"rb") as f:
-            # Lê o arquivo em pedaços para evitar sobrecarga de memória
+            # Reads the file in chunks to avoid memory overload
             for byte_block in iter(lambda: f.read(4096),b""):
                 sha256_hash.update(byte_block)
         if sha256_hash.hexdigest() != CLOVER_SHA256:
@@ -58,7 +58,7 @@ def validate_clover_zip(file_path):
         logger("file_integrity_verified", GREEN)
 
 def cleanup():
-    """Limpa arquivos temporários."""
+    """Cleans up temporary files."""
     logger("cleaning_up", YELLOW)
     try:
         os.remove(f"{SCRIPT_DIR}/Clover.zip")
@@ -82,17 +82,16 @@ def download_ocbinarydata():
     from config import SCRIPT_DIR
     oc_dir = os.path.join(SCRIPT_DIR, 'OcBinaryData')
     if os.path.exists(oc_dir):
-        logger('OcBinaryData já está presente.', GREEN)
+        logger('OcBinaryData is already present.', GREEN)
         return oc_dir
     try:
-        logger('Clonando OcBinaryData...', GREEN)
+        logger('Cloning OcBinaryData...', GREEN)
         subprocess.run(['git', 'clone', '--depth=1', 'https://github.com/acidanthera/OcBinaryData.git', oc_dir], check=True)
-        logger('OcBinaryData clonado com sucesso.', GREEN)
+        logger('OcBinaryData cloned successfully.', GREEN)
         return oc_dir
     except subprocess.CalledProcessError:
-        logger('Erro ao clonar o repositório OcBinaryData.', RED)
-        raise CloverUpdateError('Falha ao clonar OcBinaryData.')
-
+        logger('Error cloning the OcBinaryData repository.', RED)
+        raise CloverUpdateError('Failed to clone OcBinaryData.')
 
 def copy_hfsplus_driver(ocbinarydata_dir, target_drivers_dir):
     import shutil
