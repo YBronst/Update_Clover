@@ -82,16 +82,16 @@ def download_ocbinarydata():
     from config import SCRIPT_DIR
     oc_dir = os.path.join(SCRIPT_DIR, 'OcBinaryData')
     if os.path.exists(oc_dir):
-        logger('OcBinaryData is already present.', GREEN)
+        logger('ocbinarydata_already_present', GREEN)
         return oc_dir
     try:
-        logger('Cloning OcBinaryData...', GREEN)
+        logger('cloning_ocbinarydata', GREEN)
         subprocess.run(['git', 'clone', '--depth=1', 'https://github.com/acidanthera/OcBinaryData.git', oc_dir], check=True)
-        logger('OcBinaryData cloned successfully.', GREEN)
+        logger('ocbinarydata_cloned', GREEN)
         return oc_dir
     except subprocess.CalledProcessError:
-        logger('Error cloning the OcBinaryData repository.', RED)
-        raise CloverUpdateError('Failed to clone OcBinaryData.')
+        logger('error_cloning_ocbinarydata', RED)
+        raise CloverUpdateError('error_cloning_ocbinarydata_exception')
 
 def copy_hfsplus_driver(ocbinarydata_dir, target_drivers_dir):
     import shutil

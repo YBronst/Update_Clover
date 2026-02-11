@@ -1,5 +1,5 @@
 {
-  "en": {
+  "ru": {
     "verifying_environment": "Проверка окружения...",
     "environment_verified": "Окружение успешно проверено.",
     "verifying_dependencies": "Проверка зависимостей...",
@@ -19,7 +19,7 @@
     "press_ctrl_c_to_exit": "Нажмите Ctrl+C, чтобы отменить ожидание и выйти.",
     "efi_partition_mounted": "EFI-раздел {partition} смонтирован в {mount_point}.",
     "efi_partition_not_mounted": "EFI-раздел {partition} всё ещё не смонтирован. Ожидание...",
-    "error_getting_efi_info": "Ошибка получения информации о EFI-разделе {partition}. Ожидание...",
+    "error_getting_efi_info": "Ошибка получения информации для {selected_efi}",
     "mount_manually": "Смонтируйте EFI вручную командой: 'diskutil mount {efi_partition}' и запустите скрипт снова.",
     "error_getting_mount_point": "Ошибка: не удалось найти точку монтирования для {selected_efi}",
     "invalid_choice": "Неверный выбор. Попробуйте снова.",
@@ -56,7 +56,6 @@
     "error_invalid_zip": "Ошибка: загруженный файл Clover.zip не является корректным ZIP.",
     "error_list_partitions": "Ошибка получения списка разделов.",
     "error_no_efi_partition": "Ошибка: EFI-раздел не найден.",
-    "error_getting_efi_info": "Ошибка получения информации для {selected_efi}",
     "error_efi_not_mounted": "Ошибка: выбранный EFI-раздел ({selected_efi}) не смонтирован.",
     "error_mount_point": "Ошибка: не удалось найти точку монтирования для {selected_efi}",
     "error_creating_backup": "Ошибка создания резервной копии: {error}",
@@ -114,7 +113,12 @@
     "success_update_drivers": "UEFI-драйверы успешно обновлены!",
     "efi_dir_after_mount": "Значение EFI_DIR после монтирования: {efi_dir}",
     "checking_efi_read_only": "Проверка, смонтирован ли {mount_point} в режиме только для чтения...",
-    "efi_read_write": "{mount_point} смонтирован в режиме чтения/записи."
+    "efi_read_write": "{mount_point} смонтирован в режиме чтения/записи.",
+    "translations_loaded": "Загружены переводы для языка: {language}.",
+    "ocbinarydata_already_present": "OcBinaryData уже присутствует.",
+    "cloning_ocbinarydata": "Клонирование OcBinaryData...",
+    "ocbinarydata_cloned": "OcBinaryData успешно клонирован.",
+    "error_cloning_ocbinarydata": "Ошибка при клонировании репозитория OcBinaryData.",
+    "error_cloning_ocbinarydata_exception": "Не удалось клонировать OcBinaryData."
   }
 }
-
