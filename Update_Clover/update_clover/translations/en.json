@@ -19,7 +19,7 @@
     "press_ctrl_c_to_exit": "Press Ctrl+C to abort waiting and exit.",
     "efi_partition_mounted": "EFI partition {partition} mounted on {mount_point}.",
     "efi_partition_not_mounted": "EFI partition {partition} is still not mounted. Waiting...",
-    "error_getting_efi_info": "Error getting EFI partition information {partition}. Waiting...",
+    "error_getting_efi_info": "Error getting information for {selected_efi}",
     "mount_manually": "Mount the EFI manually using: 'diskutil mount {efi_partition}' and run the script again.",
     "error_getting_mount_point": "Error: Could not find mount point for {selected_efi}",
     "invalid_choice": "Invalid choice. Try again.",
@@ -56,7 +56,6 @@
     "error_invalid_zip": "Error: The downloaded Clover.zip file is not a valid ZIP file.",
     "error_list_partitions": "Error listing partitions.",
     "error_no_efi_partition": "Error: No EFI partition found.",
-    "error_getting_efi_info": "Error getting information for {selected_efi}",
     "error_efi_not_mounted": "Error: The selected EFI partition ({selected_efi}) is not mounted.",
     "error_mount_point": "Error: Could not find mount point for {selected_efi}",
     "error_creating_backup": "Error creating backup: {error}",
@@ -114,6 +113,12 @@
     "success_update_drivers": "UEFI drivers updated successfully!",
     "efi_dir_after_mount": "Value of EFI_DIR after mounting: {efi_dir}",
     "checking_efi_read_only": "Checking if {mount_point} is mounted as read-only...",
-    "efi_read_write": "{mount_point} is mounted as read/write."
+    "efi_read_write": "{mount_point} is mounted as read/write.",
+    "translations_loaded": "Translations loaded for language: {language}.",
+    "ocbinarydata_already_present": "OcBinaryData is already present.",
+    "cloning_ocbinarydata": "Cloning OcBinaryData...",
+    "ocbinarydata_cloned": "OcBinaryData cloned successfully.",
+    "error_cloning_ocbinarydata": "Error cloning the OcBinaryData repository.",
+    "error_cloning_ocbinarydata_exception": "Failed to clone OcBinaryData."
   }
 }

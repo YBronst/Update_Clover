@@ -28,11 +28,13 @@ def load_translations(language=None):
         language = get_system_language() or "en"  # Uses English as default if detection fails
 
     translations_path = os.path.join(SCRIPT_DIR, "translations")
-    print(f"Trying to load translations from: {translations_path}/{language}.json")
     try:
         with open(f"{translations_path}/{language}.json", "r", encoding="utf-8") as f:
-            translations = json.load(f)
-        logger(f"Translations successfully loaded for language: {language}", GREEN)
+            loaded = json.load(f)
+
+        # Supports both flat JSON and language-namespaced JSON (e.g. {"en": {...}})
+        translations = loaded.get(language, loaded) if isinstance(loaded, dict) else {}
+        logger("translations_loaded", GREEN, language=language)
     except FileNotFoundError:
         logger("translation_file_not_found", RED, language=language)
         # Loads the default language (English) if translation file is missing
